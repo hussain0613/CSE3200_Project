@@ -134,8 +134,8 @@ namespace CSE3200_Project.Controllers
             if(current_user == null)
             {
                 Request.Cookies.Remove("token");
-                Response.Cookies["ErrorMessage"]["message"] = "Invalid token. Please Login First!";
-                return Redirect("/Login");
+                Response.Cookies["Message"]["message"] = "Invalid token. Please Login First!";
+                return Redirect("/auth/login");
             }
             if (Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
             {
