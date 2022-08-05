@@ -4,37 +4,26 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CSE3200_Project.Models;
+using CSE3200_Project.Attributes;
 
 namespace CSE3200_Project.Controllers
 {
+    [CurrentUser]
     public class AuthController : Controller
     {
         private DRIEntities db = new DRIEntities();
 
         // GET: Auth
         [HttpGet]
+        [CurrentUser(anonymous_required = true)]
         public ActionResult Login()
         {
-            if (Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
-            {
-                ViewBag.Message = Request.Cookies["Message"]["message"];
-                Request.Cookies.Remove("Message");
-            }
-
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
-
             return View();
         }
 
         // Post: Login
         [HttpPost]
+        [CurrentUser(anonymous_required = true)]
         public ActionResult Login(LoginViewModel creds)
         {
             User user = db.Users.Where(u => u.username == creds.Username && u.password == creds.Password).FirstOrDefault();
@@ -46,46 +35,30 @@ namespace CSE3200_Project.Controllers
                 token["user-agent"] = Request.UserAgent;
                 token.Expires.AddHours(1);
                 // DateTime d = DateTime.Now + new TimeSpan(0,1,0);
+
+                string from = Request.QueryString["next"];
                 Response.Cookies.Add(token);
-                return RedirectToAction("Profile");
+                if (from != null)
+                {
+                    return Redirect(from);
+                }
+                return Redirect($"/auth/profile?from={from}");
             }
             Response.StatusCode = 404;
             ViewBag.Message = "User not Found!";
-
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
 
             return View();
         }
 
         [HttpGet]
+        [CurrentUser(anonymous_required = true)]
         public ActionResult Register()
         {
-            if (Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
-            {
-                ViewBag.Message = Request.Cookies["Message"]["message"];
-                Request.Cookies.Remove("Message");
-            }
-
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
-
             return View();
         }
 
         [HttpPost]
+        [CurrentUser(anonymous_required = true)]
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel reg_info)
         {
@@ -114,44 +87,14 @@ namespace CSE3200_Project.Controllers
                 return RedirectToAction("Login");
             }
 
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
-
             return View();
         }
 
+        [CurrentUser(login_required = true)]
         [HttpGet]
         public ActionResult Profile()
         {
-            AuthHelpers authHelpers = new AuthHelpers(Request);
-            User current_user = authHelpers.get_current_user();
-            if(current_user == null)
-            {
-                Request.Cookies.Remove("token");
-                Response.Cookies["Message"]["message"] = "Invalid token. Please Login First!";
-                return Redirect("/auth/login");
-            }
-            if (Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
-            {
-                ViewBag.Message = Request.Cookies["Message"]["message"];
-                Request.Cookies.Remove("Message");
-            }
-
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
-
+            User current_user = (User)HttpContext.Items["current_user"];
             return View(current_user);
         }
 
@@ -160,15 +103,6 @@ namespace CSE3200_Project.Controllers
             HttpCookie token = new HttpCookie("token");
             token.Expires = DateTime.Now.AddDays(-1d);
             Response.Cookies.Set(token);
-
-            AuthHelpers ah = new AuthHelpers(Request);
-            User cu = ah.get_current_user();
-            ViewBag.IsAuthenticated = false;
-            if (cu != null)
-            {
-                ViewBag.current_user = cu;
-                ViewBag.IsAuthenticated = true;
-            }
 
             return Redirect("/");
         }
