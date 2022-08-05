@@ -9,6 +9,7 @@ namespace CSE3200_Project.Attributes
     {
         private DRIEntities db = new DRIEntities();
         public bool login_required { get; set; } = false;
+        public bool anonymous_required { get; set; } = false;
         public string[] roles_required { get; set; } = { };
 
         public void OnAuthorization(AuthorizationContext filterContext)
@@ -22,14 +23,24 @@ namespace CSE3200_Project.Attributes
                 if(user != null)
                 {
                     filterContext.HttpContext.Items["current_user"] = user;
-                    if(roles_required.Length > 0 && Array.IndexOf(roles_required, user.role.ToLower()) < 0)
+                    
+                    if (anonymous_required)
+                    {
+                        HttpCookie responseCookie = new HttpCookie("Message");
+                        responseCookie["message"] = "You are already logged in!";
+                        filterContext.HttpContext.Response.Cookies.Add(responseCookie);
+                        filterContext.Result = new RedirectResult("/");
+                        return;
+                    }
+                    
+                    if (roles_required.Length > 0 && Array.IndexOf(roles_required, user.role.ToLower()) < 0)
                     {
                         HttpCookie responseCookie = new HttpCookie("Message");
                         responseCookie["message"] = "Not Authorized to view the target page!";
                         filterContext.HttpContext.Response.Cookies.Add(responseCookie);
                         filterContext.Result = new RedirectResult("/");
                     }
-                    return ;
+                    return;
                 }
             }
 
