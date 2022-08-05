@@ -7,9 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using CSE3200_Project.Models;
+using CSE3200_Project.Attributes;
 
 namespace CSE3200_Project.Controllers
 {
+    [CurrentUser("admin")]
     public class UsersController : Controller
     {
         private DRIEntities db = new DRIEntities();
@@ -36,6 +38,7 @@ namespace CSE3200_Project.Controllers
         }
 
         // GET: Users/Create
+        [CurrentUser("admin")]
         public ActionResult Create()
         {
             return View();

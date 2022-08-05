@@ -1,4 +1,8 @@
-﻿@if (ViewBag.IsAuthenticated)
+﻿@using CSE3200_Project.Models
+@{ 
+    User current_user = (User) HttpContext.Current.Items["current_user"];
+}
+@if (current_user != null)
 {
     using (Html.BeginForm("Logout", "Auth", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
@@ -6,7 +10,7 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                @Html.ActionLink($"{@ViewBag.current_user.username}", "Profile", "Auth")
+                @Html.ActionLink($"{current_user.username}", "Profile", "Auth")
             </li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()">Logout</a></li>
         </ul>
