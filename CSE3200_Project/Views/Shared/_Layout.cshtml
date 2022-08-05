@@ -29,6 +29,14 @@
         </div>
     </div>
     <div class="container body-content">
+        <ul id="messages" class="alert alert-dismissible" role="alert">
+            @if(Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
+            {
+                <li>@Request.Cookies["Message"]["message"]</li>
+                Response.Cookies["Message"].Expires = DateTime.Now.AddDays(-1d);
+            }
+        </ul>
+
         @RenderBody()
         <hr />
         <footer>
