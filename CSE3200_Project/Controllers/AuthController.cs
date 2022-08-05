@@ -42,7 +42,7 @@ namespace CSE3200_Project.Controllers
                 {
                     return Redirect(from);
                 }
-                return Redirect($"/auth/profile?from={from}");
+                return Redirect($"/auth/profile");
             }
             Response.StatusCode = 404;
             ViewBag.Message = "User not Found!";
@@ -62,12 +62,6 @@ namespace CSE3200_Project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Register(RegisterViewModel reg_info)
         {
-            if(reg_info.Password != reg_info.ConfirmPassword)
-            {
-                ViewBag.Message = $"Passwords do not match!";
-                return View();
-            }
-            //ViewBag.Message = $"Created new user: {reg_info.Username}";
             if (ModelState.IsValid)
             {
                 User user = new User();
