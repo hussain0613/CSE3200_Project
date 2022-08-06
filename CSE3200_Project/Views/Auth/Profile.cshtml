@@ -4,10 +4,10 @@
     ViewBag.Title = "Profile";
 }
 
-<h2>Details</h2>
+<h3>@Html.DisplayFor(model => model.name)</h3>
 
 <div>
-    <h4>User</h4>
+    <h4>@Html.DisplayFor(model => model.email)</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -48,14 +48,6 @@
 
         <dd>
             @Html.DisplayFor(model => model.username)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.password)
         </dd>
 
         <dt>

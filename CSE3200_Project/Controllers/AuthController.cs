@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using CSE3200_Project.Models;
 using CSE3200_Project.Attributes;
+using System.Data.Entity.Infrastructure;
 
 namespace CSE3200_Project.Controllers
 {
@@ -73,13 +74,44 @@ namespace CSE3200_Project.Controllers
                 user.password = reg_info.Password;
                 user.role = "general";
                 
-                db.Users.Add(user);
-                db.SaveChanges();
+                try
+                {
+                    db.Users.Add(user);
+                    db.SaveChanges();
+                }catch(DbUpdateException exc)
+                {
+                    string exc_msg = exc.InnerException.InnerException.Message;
+                    if (exc_msg.Contains("Violation of UNIQUE KEY constraint"))
+                    {
+                        if (exc_msg.Contains("uq_User_email"))
+                        {
+                            ViewBag.Message = "There's already an account with the given email address!";
+                        }
+                        else if (exc_msg.Contains("uq_User_username"))
+{
+                            ViewBag.Message = "The username has been taken already!";
+
+                        }
+                        else
+                        {
+                            ViewBag.Message = exc_msg;
+                        }
+                        Response.StatusCode = 409;
+                        return View();
+                    }
+                    else
+                    {
+                        ViewBag.Message = exc_msg;
+                        Response.StatusCode = 418;
+                        return View();
+                    }
+                }
 
                 HttpCookie message_cookie = new HttpCookie("Message");
                 message_cookie["message"] = "User created Successfully. Please Login.";
                 Response.Cookies.Add(message_cookie);
                 return RedirectToAction("Login");
+                
             }
 
             return View();
