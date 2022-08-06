@@ -119,6 +119,8 @@ namespace CSE3200_Project.Controllers
 
         public ActionResult Logout()
         {
+            if(HttpContext.Items["current_user"] != null)
+                HttpContext.Items.Remove("current_user");
             HttpCookie token = new HttpCookie("token");
             token.Expires = DateTime.Now.AddDays(-1d);
             Response.Cookies.Set(token);

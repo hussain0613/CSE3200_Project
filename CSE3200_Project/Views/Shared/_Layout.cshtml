@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using CSE3200_Project.Models
+@{
+    User current_user = (User)HttpContext.Current.Items["current_user"];
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -21,31 +26,38 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    @Html.Partial("_NavBarPartial")
-                </ul>
+                    @if (current_user != null)
+                    {
+                        if (current_user.role.ToLower().Equals("admin"))
+                        {
+                            <li>@Html.ActionLink("Users", "index", "users")</li>
+                        }
+                    }
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        @Html.Partial("_NavBarPartial")
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container body-content">
-        <ul id="messages" class="alert alert-dismissible" role="alert">
-            @if(Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
-            {
-                <li>@Request.Cookies["Message"]["message"]</li>
-                Response.Cookies["Message"].Expires = DateTime.Now.AddDays(-1d);
-            }
-        </ul>
+        <div class="container body-content">
+            <ul id="messages" class="alert alert-dismissible" role="alert">
+                @if (Request.Cookies["Message"] != null && Request.Cookies["Message"]["message"] != null)
+                {
+                    <li>@Request.Cookies["Message"]["message"]</li>
+                    Response.Cookies["Message"].Expires = DateTime.Now.AddDays(-1d);
+                }
+            </ul>
 
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>
+        </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
-</body>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+    </body>
 </html>
