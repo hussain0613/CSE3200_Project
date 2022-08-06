@@ -66,6 +66,7 @@ namespace CSE3200_Project.Controllers
             {
                 User user = new User();
 
+                user.creation_datetime = DateTime.Now;
                 user.name = reg_info.Name;
                 user.email = reg_info.Email;
                 user.username = reg_info.Username;

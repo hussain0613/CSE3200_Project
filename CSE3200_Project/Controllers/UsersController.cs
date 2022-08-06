@@ -48,10 +48,11 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,creation_datetime,modification_datetime,name,email,username,password,role,status")] User user)
+        public ActionResult Create([Bind(Include = "id,name,email,username,password,role,status")] User user)
         {
             if (ModelState.IsValid)
             {
+                user.creation_datetime = DateTime.Now;
                 db.Users.Add(user);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -80,13 +81,26 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,creation_datetime,modification_datetime,name,email,username,password,role,status")] User user)
+        public ActionResult Edit([Bind(Include = "id,role,status")] User user)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(user).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                User db_user = db.Users.Find(user.id);
+                if (db_user != null)
+                {
+                    db_user.modification_datetime = DateTime.Now;
+                    db_user.role = user.role;
+                    db_user.status = user.status;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    HttpCookie cookie = new HttpCookie("Message");
+                    cookie["message"] = "User not found!";
+                    Response.StatusCode = 404;
+                    return Redirect("/");
+                }
             }
             return View(user);
         }
