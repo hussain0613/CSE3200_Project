@@ -43,7 +43,7 @@ namespace CSE3200_Project.Controllers
                 {
                     return Redirect(from);
                 }
-                return Redirect($"/auth/profile");
+                return Redirect("/profile");
             }
             Response.StatusCode = 404;
             ViewBag.Message = "Invalid credentials!";
@@ -115,14 +115,6 @@ namespace CSE3200_Project.Controllers
             }
 
             return View();
-        }
-
-        [CurrentUser(login_required = true)]
-        [HttpGet]
-        public ActionResult Profile()
-        {
-            User current_user = (User)HttpContext.Items["current_user"];
-            return View(current_user);
         }
 
         public ActionResult Logout()
