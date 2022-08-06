@@ -4,7 +4,24 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DRIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DRIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Content">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="creator_id" Type="int" />
+          <Property Name="creation_datetime" Type="datetime" />
+          <Property Name="modifier_id" Type="int" />
+          <Property Name="modification_datetime" Type="datetime" />
+          <Property Name="title" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="details" Type="text" />
+          <Property Name="url" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="alternative_url" Type="varchar" MaxLength="1000" />
+          <Property Name="type" Type="varchar" MaxLength="20" />
+          <Property Name="privacy" Type="varchar" MaxLength="20" />
+          <Property Name="status" Type="bit" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="id" />
@@ -19,11 +36,43 @@
           <Property Name="role" Type="nvarchar" MaxLength="20" />
           <Property Name="status" Type="bit" />
         </EntityType>
+        <Association Name="fk_content_creator_id">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Content" Type="Self.Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="creator_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_content_modifier_id">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Content" Type="Self.Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="modifier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="DRIModelStoreContainer">
+          <EntitySet Name="Content" EntityType="Self.Content" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="fk_content_creator_id" Association="Self.fk_content_creator_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
+          <AssociationSet Name="fk_content_modifier_id" Association="Self.fk_content_modifier_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DRIModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -40,11 +89,65 @@
           <Property Name="password" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="status" Type="Boolean" />
-        </EntityType>
+          <NavigationProperty Name="Contents" Relationship="DRIModel.fk_content_creator_id" FromRole="User" ToRole="Content" />
+          <NavigationProperty Name="Contents1" Relationship="DRIModel.fk_content_modifier_id" FromRole="User" ToRole="Content" />
+          </EntityType>
         <EntityContainer Name="DRIEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Users" EntityType="Self.User" />
-        </EntityContainer>
-      </Schema>
+          <EntitySet Name="Contents" EntityType="DRIModel.Content" />
+          <AssociationSet Name="fk_content_creator_id" Association="DRIModel.fk_content_creator_id">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Content" EntitySet="Contents" />
+          </AssociationSet>
+          <AssociationSet Name="fk_content_modifier_id" Association="DRIModel.fk_content_modifier_id">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Content" EntitySet="Contents" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="Content">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="creator_id" Type="Int32" />
+          <Property Name="creation_datetime" Type="DateTime" Precision="3" />
+          <Property Name="modifier_id" Type="Int32" />
+          <Property Name="modification_datetime" Type="DateTime" Precision="3" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="url" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="alternative_url" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="type" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="privacy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="Boolean" />
+          <NavigationProperty Name="User" Relationship="DRIModel.fk_content_creator_id" FromRole="Content" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="DRIModel.fk_content_modifier_id" FromRole="Content" ToRole="User" />
+        </EntityType>
+        <Association Name="fk_content_creator_id">
+          <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DRIModel.Content" Role="Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="creator_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_content_modifier_id">
+          <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DRIModel.Content" Role="Content" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Content">
+              <PropertyRef Name="modifier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -62,6 +165,24 @@
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="role" ColumnName="role" />
                 <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Contents">
+            <EntityTypeMapping TypeName="DRIModel.Content">
+              <MappingFragment StoreEntitySet="Content">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="privacy" ColumnName="privacy" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="alternative_url" ColumnName="alternative_url" />
+                <ScalarProperty Name="url" ColumnName="url" />
+                <ScalarProperty Name="details" ColumnName="details" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="modification_datetime" ColumnName="modification_datetime" />
+                <ScalarProperty Name="modifier_id" ColumnName="modifier_id" />
+                <ScalarProperty Name="creation_datetime" ColumnName="creation_datetime" />
+                <ScalarProperty Name="creator_id" ColumnName="creator_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

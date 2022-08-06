@@ -14,6 +14,13 @@ namespace CSE3200_Project.Models
     
     public partial class User
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public User()
+        {
+            this.Contents = new HashSet<Content>();
+            this.Contents1 = new HashSet<Content>();
+        }
+    
         public int id { get; set; }
         public Nullable<System.DateTime> creation_datetime { get; set; }
         public Nullable<System.DateTime> modification_datetime { get; set; }
@@ -23,5 +30,10 @@ namespace CSE3200_Project.Models
         public string password { get; set; }
         public string role { get; set; }
         public Nullable<bool> status { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Content> Contents { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Content> Contents1 { get; set; }
     }
 }

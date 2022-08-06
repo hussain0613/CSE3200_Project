@@ -6,7 +6,10 @@
     <edmx:Diagrams>
       <Diagram DiagramId="072e6aeb8aca4146bc2569e35781607e" Name="Diagram1">
         <EntityTypeShape EntityType="DRIModel.User" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
-      </Diagram>
+        <EntityTypeShape EntityType="DRIModel.Content" Width="1.5" PointX="3" PointY="6.75" />
+        <AssociationConnector Association="DRIModel.fk_content_creator_id" />
+        <AssociationConnector Association="DRIModel.fk_content_modifier_id" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>
