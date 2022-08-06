@@ -29,6 +29,7 @@ namespace CSE3200_Project.Attributes
                         HttpCookie responseCookie = new HttpCookie("Message");
                         responseCookie["message"] = "You are already logged in!";
                         filterContext.HttpContext.Response.Cookies.Add(responseCookie);
+                        filterContext.HttpContext.Response.StatusCode = 400;
                         filterContext.Result = new RedirectResult("/");
                         return;
                     }
@@ -38,6 +39,7 @@ namespace CSE3200_Project.Attributes
                         HttpCookie responseCookie = new HttpCookie("Message");
                         responseCookie["message"] = "Not Authorized to view the target page!";
                         filterContext.HttpContext.Response.Cookies.Add(responseCookie);
+                        filterContext.HttpContext.Response.StatusCode = 403;
                         filterContext.Result = new RedirectResult("/");
                     }
                     return;
@@ -49,6 +51,7 @@ namespace CSE3200_Project.Attributes
                 HttpCookie responseCookie = new HttpCookie("Message");
                 responseCookie["message"] = "To view this page you need to Login first!";
                 filterContext.HttpContext.Response.Cookies.Add(responseCookie);
+                filterContext.HttpContext.Response.StatusCode = 401;
                 filterContext.Result = new RedirectResult($"/auth/login/?next={filterContext.HttpContext.Request.Url}");
             }
         }

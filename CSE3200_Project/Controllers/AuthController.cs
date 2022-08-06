@@ -45,7 +45,7 @@ namespace CSE3200_Project.Controllers
                 return Redirect($"/auth/profile");
             }
             Response.StatusCode = 404;
-            ViewBag.Message = "User not Found!";
+            ViewBag.Message = "Invalid credentials!";
 
             return View();
         }
