@@ -38,7 +38,6 @@ namespace CSE3200_Project.Controllers
         }
 
         // GET: Users/Create
-        [CurrentUser("admin")]
         public ActionResult Create()
         {
             return View();
