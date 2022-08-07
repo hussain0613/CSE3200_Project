@@ -134,6 +134,7 @@
     <Compile Include="Controllers\ContentsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\ShelvesController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -156,6 +157,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DRI.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Shelf.cs">
+      <DependentUpon>DRI.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>DRI.tt</DependentUpon>
@@ -228,6 +232,11 @@
     <Content Include="Views\Contents\Details.cshtml" />
     <Content Include="Views\Contents\Edit.cshtml" />
     <Content Include="Views\Contents\Index.cshtml" />
+    <Content Include="Views\Shelves\Create.cshtml" />
+    <Content Include="Views\Shelves\Delete.cshtml" />
+    <Content Include="Views\Shelves\Details.cshtml" />
+    <Content Include="Views\Shelves\Edit.cshtml" />
+    <Content Include="Views\Shelves\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

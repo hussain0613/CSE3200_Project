@@ -22,6 +22,20 @@
           <Property Name="privacy" Type="varchar" MaxLength="20" />
           <Property Name="status" Type="bit" />
         </EntityType>
+        <EntityType Name="Shelf">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="creator_id" Type="int" />
+          <Property Name="creation_datetime" Type="datetime" />
+          <Property Name="modifier_id" Type="int" />
+          <Property Name="modification_datetime" Type="datetime" />
+          <Property Name="title" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="details" Type="text" />
+          <Property Name="privacy" Type="varchar" MaxLength="20" />
+          <Property Name="status" Type="bit" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="id" />
@@ -60,8 +74,33 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_shelf_creator_id">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Shelf" Type="Self.Shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Shelf">
+              <PropertyRef Name="creator_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_shelf_modifier_id">
+          <End Role="User" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Shelf" Type="Self.Shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Shelf">
+              <PropertyRef Name="modifier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="DRIModelStoreContainer">
           <EntitySet Name="Content" EntityType="Self.Content" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Shelf" EntityType="Self.Shelf" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="fk_content_creator_id" Association="Self.fk_content_creator_id">
             <End Role="User" EntitySet="User" />
@@ -70,6 +109,14 @@
           <AssociationSet Name="fk_content_modifier_id" Association="Self.fk_content_modifier_id">
             <End Role="User" EntitySet="User" />
             <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
+          <AssociationSet Name="fk_shelf_creator_id" Association="Self.fk_shelf_creator_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Shelf" EntitySet="Shelf" />
+          </AssociationSet>
+          <AssociationSet Name="fk_shelf_modifier_id" Association="Self.fk_shelf_modifier_id">
+            <End Role="User" EntitySet="User" />
+            <End Role="Shelf" EntitySet="Shelf" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -91,6 +138,8 @@
           <Property Name="status" Type="Boolean" />
           <NavigationProperty Name="Contents" Relationship="DRIModel.fk_content_creator_id" FromRole="User" ToRole="Content" />
           <NavigationProperty Name="Contents1" Relationship="DRIModel.fk_content_modifier_id" FromRole="User" ToRole="Content" />
+          <NavigationProperty Name="Shelves" Relationship="DRIModel.fk_shelf_creator_id" FromRole="User" ToRole="Shelf" />
+          <NavigationProperty Name="Shelves1" Relationship="DRIModel.fk_shelf_modifier_id" FromRole="User" ToRole="Shelf" />
           </EntityType>
         <EntityContainer Name="DRIEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Users" EntityType="Self.User" />
@@ -102,6 +151,15 @@
           <AssociationSet Name="fk_content_modifier_id" Association="DRIModel.fk_content_modifier_id">
             <End Role="User" EntitySet="Users" />
             <End Role="Content" EntitySet="Contents" />
+          </AssociationSet>
+          <EntitySet Name="Shelves" EntityType="DRIModel.Shelf" />
+          <AssociationSet Name="fk_shelf_creator_id" Association="DRIModel.fk_shelf_creator_id">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Shelf" EntitySet="Shelves" />
+          </AssociationSet>
+          <AssociationSet Name="fk_shelf_modifier_id" Association="DRIModel.fk_shelf_modifier_id">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Shelf" EntitySet="Shelves" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Content">
@@ -147,6 +205,46 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Shelf">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="creator_id" Type="Int32" />
+          <Property Name="creation_datetime" Type="DateTime" Precision="3" />
+          <Property Name="modifier_id" Type="Int32" />
+          <Property Name="modification_datetime" Type="DateTime" Precision="3" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="privacy" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="Boolean" />
+          <NavigationProperty Name="User" Relationship="DRIModel.fk_shelf_creator_id" FromRole="Shelf" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="DRIModel.fk_shelf_modifier_id" FromRole="Shelf" ToRole="User" />
+        </EntityType>
+        <Association Name="fk_shelf_creator_id">
+          <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DRIModel.Shelf" Role="Shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Shelf">
+              <PropertyRef Name="creator_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_shelf_modifier_id">
+          <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="DRIModel.Shelf" Role="Shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Shelf">
+              <PropertyRef Name="modifier_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -176,6 +274,21 @@
                 <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="alternative_url" ColumnName="alternative_url" />
                 <ScalarProperty Name="url" ColumnName="url" />
+                <ScalarProperty Name="details" ColumnName="details" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="modification_datetime" ColumnName="modification_datetime" />
+                <ScalarProperty Name="modifier_id" ColumnName="modifier_id" />
+                <ScalarProperty Name="creation_datetime" ColumnName="creation_datetime" />
+                <ScalarProperty Name="creator_id" ColumnName="creator_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Shelves">
+            <EntityTypeMapping TypeName="DRIModel.Shelf">
+              <MappingFragment StoreEntitySet="Shelf">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="privacy" ColumnName="privacy" />
                 <ScalarProperty Name="details" ColumnName="details" />
                 <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="modification_datetime" ColumnName="modification_datetime" />
