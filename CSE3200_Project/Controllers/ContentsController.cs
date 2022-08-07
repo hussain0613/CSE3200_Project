@@ -12,21 +12,38 @@ using CSE3200_Project.Attributes;
 
 namespace CSE3200_Project.Controllers
 {
-    [CurrentUser]
+    [CurrentUser(login_required = true)]
     public class ContentsController : Controller
     {
         private DRIEntities db = new DRIEntities();
 
         // GET: Contents
+        [CurrentUser]
         public ActionResult Index()
         {
-            var contents = db.Contents.Include(c => c.User).Include(c => c.User1);
+            User current_user = (User)HttpContext.Items["current_user"];
+
+            IQueryable<Content> contents;
+            if (current_user != null)
+            {
+                contents = db.Contents.Include(c => c.User).Include(c => c.User1).Where(
+                    c => c.creator_id == current_user.id
+                    );
+            }
+            else
+            {
+                contents = db.Contents.Include(c => c.User).Include(c => c.User1).Where(
+                    c => c.privacy.ToLower().Equals("public")
+                    );
+            }
             return View(contents.ToList());
         }
 
         // GET: Contents/Details/5
+        [CurrentUser]
         public ActionResult Details(int? id)
         {
+            User current_user = (User)HttpContext.Items["current_user"];
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -36,7 +53,18 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
-            return View(content);
+            if(content.privacy.ToLower().Equals("public") || (current_user != null && content.creator_id == current_user.id))
+            {
+                return View(content);
+            }
+            else
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                return Redirect("/");
+            }
         }
 
         // GET: Contents/Create
@@ -52,10 +80,16 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,creator_id,creation_datetime,modifier_id,modification_datetime,title,details,url,alternative_url,type,privacy,status")] Content content)
+        public ActionResult Create([Bind(Include = "title,details,url,alternative_url,type,privacy")] Content content)
         {
             if (ModelState.IsValid)
             {
+                User current_user = (User)HttpContext.Items["current_user"];
+                content.creation_datetime = DateTime.Now;
+                content.modification_datetime = content.creation_datetime;
+                content.creator_id = current_user.id;
+                content.modifier_id = current_user.id;
+                content.status = true;
                 db.Contents.Add(content);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -88,10 +122,12 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,creator_id,creation_datetime,modifier_id,modification_datetime,title,details,url,alternative_url,type,privacy,status")] Content content)
+        public ActionResult Edit([Bind(Include = "id,title,details,url,alternative_url,type,privacy,status")] Content content)
         {
             if (ModelState.IsValid)
             {
+                content.modification_datetime = DateTime.Now;
+                content.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                 db.Entry(content).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

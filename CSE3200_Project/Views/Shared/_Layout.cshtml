@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - Digital Resource Index</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -25,6 +25,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Contents", "index", "contents")</li>
+                    <li>@Html.ActionLink("Shelves", "index", "shelves")</li>
                     @if (current_user != null)
                     {
                         if (current_user.role.ToLower().Equals("admin"))
@@ -32,7 +34,7 @@
                             <li>@Html.ActionLink("Users", "index", "users")</li>
                         }
                     }
-                    </ul>
+                </ul>
                     <ul class="nav navbar-nav navbar-right">
                         @Html.Partial("_NavBarPartial")
                     </ul>

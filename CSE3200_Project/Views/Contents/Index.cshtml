@@ -1,22 +1,25 @@
 ﻿@model IEnumerable<CSE3200_Project.Models.Content>
+@using CSE3200_Project.Models
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Contents";
+    User current_user = (User)HttpContext.Current.Items["current_user"];
 }
 
-<h2>Index</h2>
+@if (current_user != null)
+{
+    <h2>Your Contents</h2>
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+}
+else
+{
+    <h2>Public Contents</h2>
+}
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.creation_datetime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.modification_datetime)
-        </th>
         <th>
             @Html.DisplayNameFor(model => model.title)
         </th>
@@ -39,55 +42,70 @@
             @Html.DisplayNameFor(model => model.status)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.User.name)
+            @Html.DisplayNameFor(model => model.creation_datetime)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.User1.name)
+            @Html.DisplayNameFor(model => model.modification_datetime)
         </th>
-        <th></th>
+        <th>
+            <!-- @Html.DisplayNameFor(model => model.User.name) -->
+            Creator Name
+        </th>
+        <th>
+            <!-- @Html.DisplayNameFor(model => model.User1.name) -->
+            Modifier Name
+        </th>
+        @if (current_user != null)
+        {
+            <th></th>
+        }
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.creation_datetime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.modification_datetime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.title)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.details)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.url)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.alternative_url)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.type)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.privacy)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.status)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User.name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.User1.name)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.title, "details", new { id = item.id })
+                <!--@Html.DisplayFor(modelItem => item.title)-->
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.details)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.url)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.alternative_url)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.privacy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.creation_datetime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modification_datetime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User1.name)
+            </td>
+            @if (current_user != null)
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.id })
+                </td>
+            }
+        </tr>
+    }
 
 </table>

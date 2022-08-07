@@ -1,52 +1,20 @@
 ﻿@model CSE3200_Project.Models.Content
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Contents - Create";
 }
 
-<h2>Create</h2>
+<h2>Create Content</h2>
 
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Content</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.creator_id, "creator_id", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("creator_id", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.creator_id, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.creation_datetime, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.creation_datetime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.creation_datetime, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.modifier_id, "modifier_id", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("modifier_id", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.modifier_id, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.modification_datetime, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.modification_datetime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.modification_datetime, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
         <div class="form-group">
             @Html.LabelFor(model => model.title, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -90,18 +58,21 @@
         <div class="form-group">
             @Html.LabelFor(model => model.privacy, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.privacy, new { htmlAttributes = new { @class = "form-control" } })
+                @{ 
+                    List<SelectListItem> listItem = new List<SelectListItem> {
+                        new SelectListItem(){
+                            Text = "Private",
+                            Value = "private",
+                            Selected = true
+                        },
+                        new SelectListItem(){
+                            Text = "Public",
+                            Value = "public"
+                        }
+                    };
+                }
+                @Html.DropDownList("privacy", listItem, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.privacy, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.status)
-                    @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
-                </div>
             </div>
         </div>
 
