@@ -50,7 +50,37 @@
         <div class="form-group">
             @Html.LabelFor(model => model.type, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.type, new { htmlAttributes = new { @class = "form-control" } })
+                @{
+                    List<SelectListItem> typeItem = new List<SelectListItem> {
+                        new SelectListItem(){
+                            Text = "Text",
+                            Value = "text",
+                            Selected = true
+                        },
+                        new SelectListItem(){
+                            Text = "Video",
+                            Value = "video"
+                        }
+                        ,
+                        new SelectListItem(){
+                            Text = "Image",
+                            Value = "image"
+                        },
+                        new SelectListItem(){
+                            Text = "PDF",
+                            Value = "pdf"
+                        },
+                        new SelectListItem(){
+                            Text = "Audio",
+                            Value = "audio"
+                        },
+                        new SelectListItem(){
+                            Text = "Others",
+                            Value = "others"
+                        }
+                    };
+                }
+                @Html.DropDownList("type", typeItem, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.type, "", new { @class = "text-danger" })
             </div>
         </div>

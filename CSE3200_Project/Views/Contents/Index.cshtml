@@ -6,6 +6,7 @@
     User current_user = (User)HttpContext.Current.Items["current_user"];
 }
 
+
 @if (current_user != null)
 {
     <h2>Your Contents</h2>
@@ -17,6 +18,7 @@ else
 {
     <h2>Public Contents</h2>
 }
+
 
 <table class="table">
     <tr>

@@ -11,21 +11,38 @@ using CSE3200_Project.Attributes;
 
 namespace CSE3200_Project.Controllers
 {
-    [CurrentUser]
+    [CurrentUser(login_required = true)]
     public class ShelvesController : Controller
     {
         private DRIEntities db = new DRIEntities();
 
         // GET: Shelves
+        [CurrentUser]
         public ActionResult Index()
         {
-            var shelves = db.Shelves.Include(s => s.User).Include(s => s.User1);
+            User current_user = (User)HttpContext.Items["current_user"];
+
+            IQueryable<Shelf> shelves;
+            if (current_user != null)
+            {
+                shelves = db.Shelves.Include(s => s.User).Include(s => s.User1).Where(
+                    s => s.creator_id == current_user.id
+                    );
+            }
+            else
+            {
+                shelves = db.Shelves.Include(s => s.User).Include(s => s.User1).Where(
+                    s => s.privacy.ToLower().Equals("public")
+                    );
+            }
             return View(shelves.ToList());
         }
 
         // GET: Shelves/Details/5
+        [CurrentUser]
         public ActionResult Details(int? id)
         {
+            User current_user = (User)HttpContext.Items["current_user"];
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -35,7 +52,18 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
-            return View(shelf);
+            if (shelf.privacy.ToLower().Equals("public") || (current_user != null && shelf.creator_id == current_user.id))
+            {
+                return View(shelf);
+            }
+            else
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                return Redirect("/");
+            }
         }
 
         // GET: Shelves/Create
@@ -51,10 +79,16 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "id,creator_id,creation_datetime,modifier_id,modification_datetime,title,details,privacy,status")] Shelf shelf)
+        public ActionResult Create([Bind(Include = "title,details,privacy")] Shelf shelf)
         {
             if (ModelState.IsValid)
             {
+                User current_user = (User)HttpContext.Items["current_user"];
+                shelf.creation_datetime = DateTime.Now;
+                shelf.modification_datetime = shelf.creation_datetime;
+                shelf.creator_id = current_user.id;
+                shelf.modifier_id = current_user.id;
+                shelf.status = true;
                 db.Shelves.Add(shelf);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -87,10 +121,12 @@ namespace CSE3200_Project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "id,creator_id,creation_datetime,modifier_id,modification_datetime,title,details,privacy,status")] Shelf shelf)
+        public ActionResult Edit([Bind(Include = "id,title,details,privacy,status")] Shelf shelf)
         {
             if (ModelState.IsValid)
             {
+                shelf.modification_datetime = DateTime.Now;
+                shelf.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                 db.Entry(shelf).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -99,6 +135,7 @@ namespace CSE3200_Project.Controllers
             ViewBag.modifier_id = new SelectList(db.Users, "id", "name", shelf.modifier_id);
             return View(shelf);
         }
+        
 
         // GET: Shelves/Delete/5
         public ActionResult Delete(int? id)

@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Details";
+    User current_user = (User)HttpContext.Current.Items["current_user"];
 }
 
 <h2>Details</h2>
@@ -59,7 +60,8 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.User.name)
+            <!--@Html.DisplayNameFor(model => model.User.name)-->
+            Created By
         </dt>
 
         <dd>
@@ -67,7 +69,8 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.User1.name)
+            <!--@Html.DisplayNameFor(model => model.User1.name)-->
+            Last Modified By
         </dt>
 
         <dd>
@@ -77,6 +80,9 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @if (current_user != null)
+    {
+        @Html.ActionLink("Edit", "Edit", new { id = Model.id }) <span>|</span>
+    }
     @Html.ActionLink("Back to List", "Index")
 </p>
