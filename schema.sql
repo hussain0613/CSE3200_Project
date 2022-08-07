@@ -52,3 +52,34 @@ create table Content(
 
 select * from Content;
 
+create table Shelf(
+	id int identity(1, 1),
+	
+	creator_id int,
+	creation_datetime datetime constraint df_shelf_creation_datetime default getDate(),
+	
+	modifier_id int,
+	modification_datetime datetime constraint df_shelf_modification_datetime default getDate(),
+	
+	title varchar(50) not null,
+	details text,
+	privacy varchar(20) constraint df_shelf_privacy default 'private',
+	"status" bit constraint df_shelf_status default 1,
+	
+	constraint pk_shelf_id primary key(id),
+	constraint fk_shelf_creator_id foreign key(creator_id) references "user"(id),
+	constraint fk_shelf_modifier_id foreign key(modifier_id) references "user"(id),
+	
+	constraint uq_shelf_title_creator_id unique(title, creator_id)
+);
+
+select * from Shelf;
+
+create table "content-shelf"(
+	content_id int,
+	shelf_id int,
+	
+	constraint "pk_content-shelf_content_id_shelf_id" primary key(content_id, shelf_id),
+	constraint "fk_content-shelf_content_id" foreign key(content_id) references content(id) on delete cascade,
+	constraint "fk_content-shelf_shelf_id" foreign key(shelf_id) references shelf(id) on delete cascade
+);
