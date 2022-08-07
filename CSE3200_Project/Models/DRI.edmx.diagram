@@ -12,6 +12,7 @@
         <EntityTypeShape EntityType="DRIModel.Shelf" Width="1.5" PointX="3" PointY="1" />
         <AssociationConnector Association="DRIModel.fk_shelf_creator_id" />
         <AssociationConnector Association="DRIModel.fk_shelf_modifier_id" />
+        <AssociationConnector Association="DRIModel.content_shelf" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

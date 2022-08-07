@@ -14,6 +14,12 @@ namespace CSE3200_Project.Models
     
     public partial class Content
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Content()
+        {
+            this.Shelves = new HashSet<Shelf>();
+        }
+    
         public int id { get; set; }
         public Nullable<int> creator_id { get; set; }
         public Nullable<System.DateTime> creation_datetime { get; set; }
@@ -29,5 +35,7 @@ namespace CSE3200_Project.Models
     
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Shelf> Shelves { get; set; }
     }
 }

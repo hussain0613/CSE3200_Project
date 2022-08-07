@@ -25,7 +25,6 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     @if (current_user != null)
                     {
                         if (current_user.role.ToLower().Equals("admin"))
@@ -52,7 +51,7 @@
             @RenderBody()
             <hr />
             <footer>
-                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                <p>&copy; @DateTime.Now.Year - 190104072 - 190104071 - 190104060</p>
             </footer>
         </div>
 

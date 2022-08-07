@@ -22,6 +22,14 @@
           <Property Name="privacy" Type="varchar" MaxLength="20" />
           <Property Name="status" Type="bit" />
         </EntityType>
+        <EntityType Name="content-shelf">
+          <Key>
+            <PropertyRef Name="content_id" />
+            <PropertyRef Name="shelf_id" />
+          </Key>
+          <Property Name="content_id" Type="int" Nullable="false" />
+          <Property Name="shelf_id" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Shelf">
           <Key>
             <PropertyRef Name="id" />
@@ -74,6 +82,34 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_content-shelf_content_id">
+          <End Role="Content" Type="Self.Content" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="content-shelf" Type="Self.content-shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Content">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="content-shelf">
+              <PropertyRef Name="content_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_content-shelf_shelf_id">
+          <End Role="Shelf" Type="Self.Shelf" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="content-shelf" Type="Self.content-shelf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Shelf">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="content-shelf">
+              <PropertyRef Name="shelf_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="fk_shelf_creator_id">
           <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="Shelf" Type="Self.Shelf" Multiplicity="*" />
@@ -100,6 +136,7 @@
         </Association>
         <EntityContainer Name="DRIModelStoreContainer">
           <EntitySet Name="Content" EntityType="Self.Content" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="content-shelf" EntityType="Self.content-shelf" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Shelf" EntityType="Self.Shelf" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="fk_content_creator_id" Association="Self.fk_content_creator_id">
@@ -109,6 +146,14 @@
           <AssociationSet Name="fk_content_modifier_id" Association="Self.fk_content_modifier_id">
             <End Role="User" EntitySet="User" />
             <End Role="Content" EntitySet="Content" />
+          </AssociationSet>
+          <AssociationSet Name="fk_content-shelf_content_id" Association="Self.fk_content-shelf_content_id">
+            <End Role="Content" EntitySet="Content" />
+            <End Role="content-shelf" EntitySet="content-shelf" />
+          </AssociationSet>
+          <AssociationSet Name="fk_content-shelf_shelf_id" Association="Self.fk_content-shelf_shelf_id">
+            <End Role="Shelf" EntitySet="Shelf" />
+            <End Role="content-shelf" EntitySet="content-shelf" />
           </AssociationSet>
           <AssociationSet Name="fk_shelf_creator_id" Association="Self.fk_shelf_creator_id">
             <End Role="User" EntitySet="User" />
@@ -161,6 +206,10 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Shelf" EntitySet="Shelves" />
           </AssociationSet>
+          <AssociationSet Name="content_shelf" Association="DRIModel.content_shelf">
+            <End Role="Content" EntitySet="Contents" />
+            <End Role="Shelf" EntitySet="Shelves" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Content">
           <Key>
@@ -180,6 +229,7 @@
           <Property Name="status" Type="Boolean" />
           <NavigationProperty Name="User" Relationship="DRIModel.fk_content_creator_id" FromRole="Content" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DRIModel.fk_content_modifier_id" FromRole="Content" ToRole="User" />
+          <NavigationProperty Name="Shelves" Relationship="DRIModel.content_shelf" FromRole="Content" ToRole="Shelf" />
         </EntityType>
         <Association Name="fk_content_creator_id">
           <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
@@ -220,6 +270,7 @@
           <Property Name="status" Type="Boolean" />
           <NavigationProperty Name="User" Relationship="DRIModel.fk_shelf_creator_id" FromRole="Shelf" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="DRIModel.fk_shelf_modifier_id" FromRole="Shelf" ToRole="User" />
+          <NavigationProperty Name="Contents" Relationship="DRIModel.content_shelf" FromRole="Shelf" ToRole="Content" />
         </EntityType>
         <Association Name="fk_shelf_creator_id">
           <End Type="DRIModel.User" Role="User" Multiplicity="0..1" />
@@ -244,6 +295,10 @@
               <PropertyRef Name="modifier_id" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="content_shelf">
+          <End Type="DRIModel.Content" Role="Content" Multiplicity="*" />
+          <End Type="DRIModel.Shelf" Role="Shelf" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -299,6 +354,14 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <AssociationSetMapping Name="content_shelf" TypeName="DRIModel.content_shelf" StoreEntitySet="content-shelf">
+            <EndProperty Name="Shelf">
+              <ScalarProperty Name="id" ColumnName="shelf_id" />
+            </EndProperty>
+            <EndProperty Name="Content">
+              <ScalarProperty Name="id" ColumnName="content_id" />
+            </EndProperty>
+          </AssociationSetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
