@@ -1,22 +1,16 @@
 ﻿@model IEnumerable<CSE3200_Project.Models.User>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Users";
 }
 
-<h2>Index</h2>
+<h2>Users</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
     <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.creation_datetime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.modification_datetime)
-        </th>
         <th>
             @Html.DisplayNameFor(model => model.name)
         </th>
@@ -32,19 +26,19 @@
         <th>
             @Html.DisplayNameFor(model => model.status)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.creation_datetime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.modification_datetime)
+        </th>
         <th></th>
     </tr>
 
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.creation_datetime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.modification_datetime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.name)
+            @Html.ActionLink(item.name, "Details", new { id = item.id })
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.email)
@@ -59,9 +53,14 @@
             @Html.DisplayFor(modelItem => item.status)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.id })
+            @Html.DisplayFor(modelItem => item.creation_datetime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.modification_datetime)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.id }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.id })
         </td>
     </tr>
 }

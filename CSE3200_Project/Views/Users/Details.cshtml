@@ -1,31 +1,15 @@
 ﻿@model CSE3200_Project.Models.User
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Users - Details";
 }
 
-<h2>Details</h2>
+<h2>@Html.DisplayFor(model => model.name)</h2>
 
 <div>
-    <h4>User</h4>
+    <h4>@Html.DisplayFor(model => model.username)</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.creation_datetime)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.creation_datetime)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.modification_datetime)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.modification_datetime)
-        </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.name)
         </dt>
@@ -64,6 +48,22 @@
 
         <dd>
             @Html.DisplayFor(model => model.status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.creation_datetime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.creation_datetime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.modification_datetime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.modification_datetime)
         </dd>
 
     </dl>
