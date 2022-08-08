@@ -74,10 +74,10 @@ else
                 @Html.DisplayFor(modelItem => item.details)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.url)
+                <a href="@item.url">@Html.DisplayFor(modelItem => item.url)</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.alternative_url)
+                <a href="@item.alternative_url">@Html.DisplayFor(modelItem => item.alternative_url) </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.type)
