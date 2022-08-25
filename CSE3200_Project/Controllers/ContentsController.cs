@@ -70,8 +70,9 @@ namespace CSE3200_Project.Controllers
         // GET: Contents/Create
         public ActionResult Create()
         {
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name");
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name");
+            User current_user = (User)HttpContext.Items["current_user"];
+
+            ViewBag.shelves = db.Shelves.Include(c => c.User).Where(c => c.creator_id == current_user.id);
             return View();
         }
 
@@ -82,9 +83,22 @@ namespace CSE3200_Project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "title,details,url,alternative_url,type,privacy")] Content content)
         {
+            User current_user = (User)HttpContext.Items["current_user"];
+
             if (ModelState.IsValid)
             {
-                User current_user = (User)HttpContext.Items["current_user"];
+                string[] shelves_ids = Request.Form.GetValues("shelves");
+                if (shelves_ids != null && shelves_ids.Length > 0)
+                {
+                    ICollection<Shelf> shelves = new HashSet<Shelf>();
+                    foreach (string shelf_id in shelves_ids)
+                    {
+                        Shelf shelf = db.Shelves.Find(int.Parse(shelf_id));
+                        shelves.Add(shelf);
+                    }
+                    content.Shelves = shelves;
+                }
+
                 content.creation_datetime = DateTime.Now;
                 content.modification_datetime = content.creation_datetime;
                 content.creator_id = current_user.id;
@@ -95,8 +109,7 @@ namespace CSE3200_Project.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", content.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", content.modifier_id);
+            ViewBag.shelves = db.Shelves.Include(c => c.User).Where(c => c.creator_id == current_user.id);
             return View(content);
         }
 
