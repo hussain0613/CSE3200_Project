@@ -139,6 +139,25 @@ namespace CSE3200_Project.Controllers
         {
             if (ModelState.IsValid)
             {
+                Content content_db = db.Contents.Find(content.id);
+                if (content_db != null)
+                {
+                    content_db.modification_datetime = DateTime.Now;
+                    content_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
+                    content_db.title = content.title;
+                    content_db.details = content.details;
+                    content_db.url = content.url;
+                    content_db.alternative_url = content.alternative_url;
+                    content_db.type = content.type;
+                    content_db.privacy = content.privacy;
+                    content_db.status = content.status;
+
+                    db.Entry(content_db).State = EntityState.Modified;
+
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+
                 content.modification_datetime = DateTime.Now;
                 content.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                 db.Entry(content).State = EntityState.Modified;
