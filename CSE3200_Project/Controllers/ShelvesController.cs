@@ -125,14 +125,22 @@ namespace CSE3200_Project.Controllers
         {
             if (ModelState.IsValid)
             {
-                shelf.modification_datetime = DateTime.Now;
-                shelf.modifier_id = ((User)HttpContext.Items["current_user"]).id;
-                db.Entry(shelf).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                Shelf shelf_db = db.Shelves.Find(shelf.id);
+                if (shelf_db != null)
+                {
+                    shelf_db.modification_datetime = DateTime.Now;
+                    shelf_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
+                    shelf_db.title = shelf.title;
+                    shelf_db.details = shelf.details;
+                    shelf_db.privacy = shelf.privacy;
+                    shelf_db.status = shelf.status;
+
+                    db.Entry(shelf_db).State = EntityState.Modified;
+                    
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
             }
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", shelf.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", shelf.modifier_id);
             return View(shelf);
         }
         
