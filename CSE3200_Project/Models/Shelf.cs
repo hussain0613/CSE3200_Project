@@ -18,6 +18,7 @@ namespace CSE3200_Project.Models
         public Shelf()
         {
             this.Contents = new HashSet<Content>();
+            this.tags = new HashSet<tag>();
         }
     
         public int id { get; set; }
@@ -34,5 +35,7 @@ namespace CSE3200_Project.Models
         public virtual User User1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Content> Contents { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tag> tags { get; set; }
     }
 }

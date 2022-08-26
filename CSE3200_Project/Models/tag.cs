@@ -12,13 +12,13 @@ namespace CSE3200_Project.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Content
+    public partial class tag
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Content()
+        public tag()
         {
+            this.Contents = new HashSet<Content>();
             this.Shelves = new HashSet<Shelf>();
-            this.tags = new HashSet<tag>();
         }
     
         public int id { get; set; }
@@ -26,19 +26,14 @@ namespace CSE3200_Project.Models
         public Nullable<System.DateTime> creation_datetime { get; set; }
         public Nullable<int> modifier_id { get; set; }
         public Nullable<System.DateTime> modification_datetime { get; set; }
-        public string title { get; set; }
+        public string tag1 { get; set; }
         public string details { get; set; }
-        public string url { get; set; }
-        public string alternative_url { get; set; }
-        public string type { get; set; }
-        public string privacy { get; set; }
-        public Nullable<bool> status { get; set; }
     
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Shelf> Shelves { get; set; }
+        public virtual ICollection<Content> Contents { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tag> tags { get; set; }
+        public virtual ICollection<Shelf> Shelves { get; set; }
     }
 }

@@ -161,6 +161,9 @@
     <Compile Include="Models\Shelf.cs">
       <DependentUpon>DRI.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\tag.cs">
+      <DependentUpon>DRI.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\User.cs">
       <DependentUpon>DRI.tt</DependentUpon>
     </Compile>

@@ -13,6 +13,11 @@
         <AssociationConnector Association="DRIModel.fk_shelf_creator_id" />
         <AssociationConnector Association="DRIModel.fk_shelf_modifier_id" />
         <AssociationConnector Association="DRIModel.content_shelf" />
+        <EntityTypeShape EntityType="DRIModel.tag" Width="1.5" PointX="5.25" PointY="4.25" />
+        <AssociationConnector Association="DRIModel.fk_tag_creator_id" />
+        <AssociationConnector Association="DRIModel.fk_tag_modifier_id" />
+        <AssociationConnector Association="DRIModel.content_tag" />
+        <AssociationConnector Association="DRIModel.shelf_tag" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

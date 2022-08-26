@@ -83,3 +83,42 @@ create table "content-shelf"(
 	constraint "fk_content-shelf_content_id" foreign key(content_id) references content(id) on delete cascade,
 	constraint "fk_content-shelf_shelf_id" foreign key(shelf_id) references shelf(id) on delete cascade
 );
+
+
+create table tag(
+	id int identity(1, 1),
+	
+	creator_id int,
+	creation_datetime datetime constraint df_tag_creation_datetime default getDate(),
+	
+	modifier_id int,
+	modification_datetime datetime constraint df_tag_modification_datetime default getDate(),
+	
+	tag varchar(50) not null,
+	details text,
+	
+	constraint pk_tag_id primary key(id),
+	constraint fk_tag_creator_id foreign key(creator_id) references "user"(id),
+	constraint fk_tag_modifier_id foreign key(modifier_id) references "user"(id),
+	
+	constraint uq_tag_tag unique(tag)
+);
+
+create table "content-tag"(
+	content_id int,
+	tag_id int
+	
+	constraint "pk_content-tag_content_id_tag_id" primary key(content_id, tag_id),
+	constraint "fk_content-tag_content_id" foreign key(content_id) references content(id) on delete cascade,
+	constraint "fk_content-tag_tag_id" foreign key(tag_id) references tag(id) on delete cascade
+);
+
+
+create table "shelf-tag"(
+	shelf_id int,
+	tag_id int
+	
+	constraint "pk_shelf-tag_shelf_id_tag_id" primary key(shelf_id, tag_id),
+	constraint "fk_shelf-tag_shelf_id" foreign key(shelf_id) references shelf(id) on delete cascade,
+	constraint "fk_shelf-tag_tag_id" foreign key(tag_id) references tag(id) on delete cascade
+);

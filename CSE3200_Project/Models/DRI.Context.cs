@@ -28,5 +28,6 @@ namespace CSE3200_Project.Models
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Content> Contents { get; set; }
         public virtual DbSet<Shelf> Shelves { get; set; }
+        public virtual DbSet<tag> tags { get; set; }
     }
 }
