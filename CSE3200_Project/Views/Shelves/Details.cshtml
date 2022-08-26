@@ -78,6 +78,29 @@
             @Html.DisplayFor(model => model.User1.name)
         </dd>
 
+        <dt>
+            Contents
+        </dt>
+        <dd>
+            <table class="table table-responsive table-hover table-condensed table-striped text-justify">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                @foreach (Content content in Model.Contents)
+                {
+                    <tr>
+                        <td><a href="/contents/details/@content.id">@content.title</a></td>
+                        <td>@content.details</td>
+                        <td>@content.User.username</td>
+                    </tr>
+                }
+            </table>
+        </dd>
+
     </dl>
 </div>
 <p>

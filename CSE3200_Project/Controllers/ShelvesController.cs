@@ -59,18 +59,19 @@ namespace CSE3200_Project.Controllers
             else
             {
                 HttpCookie responseCookie = new HttpCookie("Message");
-                responseCookie["message"] = "Not Authorized to view the target page!";
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
                 Response.Cookies.Add(responseCookie);
                 Response.StatusCode = 403;
-                return Redirect("/");
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
             }
         }
 
         // GET: Shelves/Create
         public ActionResult Create()
         {
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name");
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name");
+            User current_user = (User)HttpContext.Items["current_user"];
+            ViewBag.contents = db.Contents.Where(content => content.creator_id == current_user.id);
             return View();
         }
 
@@ -81,9 +82,19 @@ namespace CSE3200_Project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "title,details,privacy")] Shelf shelf)
         {
+            User current_user = (User)HttpContext.Items["current_user"];
             if (ModelState.IsValid)
             {
-                User current_user = (User)HttpContext.Items["current_user"];
+                string[] contents_ids = Request.Form.GetValues("contents");
+                if (contents_ids != null && contents_ids.Length > 0)
+                {
+                    foreach (string content_id in contents_ids)
+                    {
+                        Content content = db.Contents.Find(int.Parse(content_id));
+                        shelf.Contents.Add(content);
+                    }
+                }
+
                 shelf.creation_datetime = DateTime.Now;
                 shelf.modification_datetime = shelf.creation_datetime;
                 shelf.creator_id = current_user.id;
@@ -94,8 +105,7 @@ namespace CSE3200_Project.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", shelf.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", shelf.modifier_id);
+            ViewBag.contents = db.Contents.Where(content => content.creator_id == current_user.id);
             return View(shelf);
         }
 
@@ -111,8 +121,8 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", shelf.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", shelf.modifier_id);
+            User current_user = ((User)HttpContext.Items["current_user"]);
+            ViewBag.unassociated_contents = db.Contents.Include(content => content.User).Where(content => content.creator_id == current_user.id);
             return View(shelf);
         }
 
@@ -123,12 +133,35 @@ namespace CSE3200_Project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "id,title,details,privacy,status")] Shelf shelf)
         {
+            User current_user = ((User)HttpContext.Items["current_user"]);
             if (ModelState.IsValid)
             {
                 Shelf shelf_db = db.Shelves.Find(shelf.id);
                 if (shelf_db != null)
                 {
-                    shelf_db.modification_datetime = DateTime.Now;
+                    string[] contents_ids = Request.Form.GetValues("contents");
+                    if (contents_ids != null && contents_ids.Length > 0)
+                    {
+                        foreach (string content_id in contents_ids)
+                        {
+                            Content content = db.Contents.Find(int.Parse(content_id));
+                            shelf.Contents.Add(content);
+                            if (!shelf_db.Contents.Contains(content))
+                            {
+                                shelf_db.Contents.Add(content);
+                            }
+                        }
+                    }
+
+                    foreach (Content content in shelf_db.Contents.ToList())
+                    {
+                        if (!shelf.Contents.Contains(content))
+                        {
+                            shelf_db.Contents.Remove(content);
+                        }
+                    }
+
+                    
                     shelf_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                     shelf_db.title = shelf.title;
                     shelf_db.details = shelf.details;
@@ -141,6 +174,8 @@ namespace CSE3200_Project.Controllers
                     return RedirectToAction("Index");
                 }
             }
+
+            ViewBag.unassociated_contents = db.Contents.Include(content => content.User).Where(content => content.creator_id == current_user.id);
             return View(shelf);
         }
         
