@@ -59,10 +59,11 @@ namespace CSE3200_Project.Controllers
             else
             {
                 HttpCookie responseCookie = new HttpCookie("Message");
-                responseCookie["message"] = "Not Authorized to view the target page!";
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
                 Response.Cookies.Add(responseCookie);
                 Response.StatusCode = 403;
-                return Redirect("/");
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
             }
         }
 

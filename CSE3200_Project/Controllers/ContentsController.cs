@@ -125,8 +125,8 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", content.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", content.modifier_id);
+            User current_user = ((User)HttpContext.Items["current_user"]);
+            ViewBag.unassociated_shelves = db.Shelves.Include(shelf => shelf.User).Where(shelf => shelf.creator_id == current_user.id);
             return View(content);
         }
 
@@ -142,6 +142,28 @@ namespace CSE3200_Project.Controllers
                 Content content_db = db.Contents.Find(content.id);
                 if (content_db != null)
                 {
+                    string[] shelves_ids = Request.Form.GetValues("shelves");
+                    if (shelves_ids != null && shelves_ids.Length > 0)
+                    {
+                        foreach (string shelf_id in shelves_ids)
+                        {
+                            Shelf shelf = db.Shelves.Find(int.Parse(shelf_id));
+                            content.Shelves.Add(shelf);
+                            if (!content_db.Shelves.Contains(shelf))
+                            {
+                                content_db.Shelves.Add(shelf);
+                            }
+                        }
+                    }
+
+                    foreach (Shelf shelf in content_db.Shelves.ToList())
+                    {
+                        if (!content.Shelves.Contains(shelf))
+                        {
+                            content_db.Shelves.Remove(shelf);
+                        }
+                    }
+                    
                     content_db.modification_datetime = DateTime.Now;
                     content_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                     content_db.title = content.title;
@@ -153,19 +175,12 @@ namespace CSE3200_Project.Controllers
                     content_db.status = content.status;
 
                     db.Entry(content_db).State = EntityState.Modified;
-
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-
-                content.modification_datetime = DateTime.Now;
-                content.modifier_id = ((User)HttpContext.Items["current_user"]).id;
-                db.Entry(content).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
             }
-            ViewBag.creator_id = new SelectList(db.Users, "id", "name", content.creator_id);
-            ViewBag.modifier_id = new SelectList(db.Users, "id", "name", content.modifier_id);
+            User current_user = ((User)HttpContext.Items["current_user"]);
+            ViewBag.unassociated_shelves = db.Shelves.Include(shelf => shelf.User).Where(shelf => shelf.creator_id == current_user.id);
             return View(content);
         }
 

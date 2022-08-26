@@ -102,6 +102,29 @@
             @Html.DisplayFor(model => model.User1.name)
         </dd>
 
+        <dt>
+            Associated Shelves
+        </dt>
+        <dd>
+            <table class="table table-responsive table-hover table-condensed table-striped text-justify">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Owner</th>
+                    </tr>
+                </thead>
+                @foreach (Shelf shelf in Model.Shelves)
+                {
+                    <tr>
+                        <td><a href="/shelves/details/@shelf.id">@shelf.title</a></td>
+                        <td>@shelf.details</td>
+                        <td>@shelf.User.username</td>
+                    </tr>
+                }
+            </table>
+        </dd>
+
     </dl>
 </div>
 <p>

@@ -12,7 +12,7 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
 <div class="form-horizontal">
     <h4>Content</h4>
     <hr />
@@ -107,6 +107,29 @@
             }
             @Html.DropDownList("privacy", listItem, htmlAttributes: new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.privacy, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("shelves", "Put into shelves", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <select name="shelves" id="shelves" multiple class="form-control dropdown">
+                <optgroup label="Associated">
+                    @foreach (Shelf shelf in Model.Shelves)
+                    {
+                        <option value="@shelf.id" selected>@shelf.title</option>
+                    }
+                </optgroup>
+                <optgroup label="Unassociated">
+                    @foreach (Shelf shelf in ViewBag.unassociated_shelves)
+                    {
+                        if (!Model.Shelves.Contains(shelf))
+                        {
+                            <option value="@shelf.id">@shelf.title</option>
+                        }
+                    }
+                </optgroup>
+            </select>
         </div>
     </div>
 
