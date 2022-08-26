@@ -31,7 +31,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.details, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.details, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.TextAreaFor(model => model.details, new { htmlAttributes = new { @class = "form-control" } })
             @Html.ValidationMessageFor(model => model.details, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -57,6 +57,29 @@
         </div>
     </div>
 
+    <div class="form-group">
+        @Html.Label("contents", "Add Contents", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <select name="contents" id="contents" multiple class="form-control dropdown">
+                <optgroup label="In the shelf">
+                    @foreach (Content content in Model.Contents)
+                    {
+                        <option value="@content.id" selected>@content.title</option>
+                    }
+                </optgroup>
+                <optgroup label="Unassociated">
+                    @foreach (Content content in ViewBag.unassociated_contents)
+                    {
+                        if (!Model.Contents.Contains(content))
+                        {
+                            <option value="@content.id">@content.title</option>
+                        }
+                    }
+                </optgroup>
+            </select>
+        </div>
+    </div>
+
     @if (current_user != null && current_user.role.ToLower().Equals("admin"))
     {
         <div class="form-group">
@@ -70,12 +93,12 @@
         </div>
     }
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
         </div>
     </div>
+</div>
 }
 
 <div>
