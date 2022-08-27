@@ -109,10 +109,11 @@ namespace CSE3200_Project.Controllers
                     foreach (string tag_name in tags_array)
                     {
                         tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(tag_name.Trim().ToLower())).FirstOrDefault();
-                        if (tag == null)
+                        string tg = tag.tag1;
+                        if (tg == null)
                         {
                             tag = new tag();
-                            tag.tag1 = tag_name;
+                            tag.tag1 = tag_name.Trim().ToLower();
                             db.tags.Add(tag);
                         }
                         tags_list.Add(tag);
@@ -184,7 +185,9 @@ namespace CSE3200_Project.Controllers
                             content_db.Shelves.Remove(shelf);
                         }
                     }
-                    
+
+                 
+
                     content_db.modification_datetime = DateTime.Now;
                     content_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                     content_db.title = content.title;

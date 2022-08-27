@@ -95,6 +95,27 @@ namespace CSE3200_Project.Controllers
                     }
                 }
 
+                // comma separated tags
+                string tags = Request.Form.Get("tags");
+                if (tags != null && tags.Length > 0)
+                {
+                    ICollection<tag> tags_list = new HashSet<tag>();
+                    string[] tags_array = tags.Split(',');
+                    foreach (string tag_name in tags_array)
+                    {
+                        tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(tag_name.Trim().ToLower())).FirstOrDefault();
+                        string tg = tag.tag1;
+                        if (tg == null)
+                        {
+                            tag = new tag();
+                            tag.tag1 = tag_name.Trim().ToLower();
+                            db.tags.Add(tag);
+                        }
+                        tags_list.Add(tag);
+                    }
+                    shelf.tags = tags_list;
+                }
+
                 shelf.creation_datetime = DateTime.Now;
                 shelf.modification_datetime = shelf.creation_datetime;
                 shelf.creator_id = current_user.id;

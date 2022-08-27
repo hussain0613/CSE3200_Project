@@ -102,6 +102,28 @@
             @Html.DisplayFor(model => model.User1.name)
         </dd>
 
+        <!-- show all the tags -->
+
+        <dt>
+            Tags
+        </dt>
+
+        <dd>
+            @{
+                string str = "";
+                if (Model.tags.Count() > 0) {
+                    str += Model.tags.ElementAt(0).tag1;
+                }
+            }
+            
+            @for (int i = 1; i < Model.tags.Count(); i++)
+            {
+                str += ",";
+                str += Model.tags.ElementAt(i).tag1;
+            }
+            @str
+        </dd>
+
         <dt>
             Associated Shelves
         </dt>

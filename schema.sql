@@ -122,3 +122,7 @@ create table "shelf-tag"(
 	constraint "fk_shelf-tag_shelf_id" foreign key(shelf_id) references shelf(id) on delete cascade,
 	constraint "fk_shelf-tag_tag_id" foreign key(tag_id) references tag(id) on delete cascade
 );
+
+select * from tag
+
+select * from "content-tag"
