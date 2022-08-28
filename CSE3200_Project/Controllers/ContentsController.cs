@@ -108,12 +108,12 @@ namespace CSE3200_Project.Controllers
                     string[] tags_array = tags.Split(',');
                     foreach (string tag_name in tags_array)
                     {
-                        tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(tag_name.Trim().ToLower())).FirstOrDefault();
-                        string tg = tag.tag1;
-                        if (tg == null)
+                        string trimmed_lowerd_tag = tag_name.Trim().ToLower();
+                        tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(trimmed_lowerd_tag)).FirstOrDefault();
+                        if (tag == null)
                         {
                             tag = new tag();
-                            tag.tag1 = tag_name.Trim().ToLower();
+                            tag.tag1 = trimmed_lowerd_tag;
                             db.tags.Add(tag);
                         }
                         tags_list.Add(tag);
@@ -148,6 +148,15 @@ namespace CSE3200_Project.Controllers
                 return HttpNotFound();
             }
             User current_user = ((User)HttpContext.Items["current_user"]);
+            if (content.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
             ViewBag.unassociated_shelves = db.Shelves.Include(shelf => shelf.User).Where(shelf => shelf.creator_id == current_user.id);
             return View(content);
         }
@@ -159,11 +168,22 @@ namespace CSE3200_Project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "id,title,details,url,alternative_url,type,privacy,status")] Content content)
         {
+            User current_user = ((User)HttpContext.Items["current_user"]);
             if (ModelState.IsValid)
             {
                 Content content_db = db.Contents.Find(content.id);
                 if (content_db != null)
                 {
+                    if (content_db.creator_id != current_user.id)
+                    {
+                        HttpCookie responseCookie = new HttpCookie("Message");
+                        responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                        Response.Cookies.Add(responseCookie);
+                        Response.StatusCode = 403;
+                        if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                        else return Redirect("/");
+                    }
+
                     string[] shelves_ids = Request.Form.GetValues("shelves");
                     if (shelves_ids != null && shelves_ids.Length > 0)
                     {
@@ -186,10 +206,8 @@ namespace CSE3200_Project.Controllers
                         }
                     }
 
-                 
-
                     content_db.modification_datetime = DateTime.Now;
-                    content_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
+                    content_db.modifier_id = current_user.id;
                     content_db.title = content.title;
                     content_db.details = content.details;
                     content_db.url = content.url;
@@ -203,7 +221,6 @@ namespace CSE3200_Project.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            User current_user = ((User)HttpContext.Items["current_user"]);
             ViewBag.unassociated_shelves = db.Shelves.Include(shelf => shelf.User).Where(shelf => shelf.creator_id == current_user.id);
             return View(content);
         }
@@ -220,6 +237,17 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
+
+            User current_user = (User)HttpContext.Items["current_user"];
+            if (content.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
             return View(content);
         }
 
@@ -229,6 +257,16 @@ namespace CSE3200_Project.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Content content = db.Contents.Find(id);
+            User current_user = (User)HttpContext.Items["current_user"];
+            if (content.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
             db.Contents.Remove(content);
             db.SaveChanges();
             return RedirectToAction("Index");
