@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CSE3200_Project.Attributes;
+using CSE3200_Project.Models;
 
 namespace CSE3200_Project.Controllers
 {
@@ -14,5 +15,7 @@ namespace CSE3200_Project.Controllers
         {
             return View();
         }
+
+        
     }
 }

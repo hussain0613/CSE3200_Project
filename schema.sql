@@ -126,3 +126,4 @@ create table "shelf-tag"(
 select * from tag
 
 select * from "content-tag"
+select * from "shelf-tag"
