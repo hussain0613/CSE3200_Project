@@ -1,5 +1,7 @@
-﻿@{
+﻿@using CSE3200_Project.Models
+@{
     ViewBag.Title = "Home Page";
+    User current_user = (User)HttpContext.Current.Items["current_user"];
 }
 
 <section>
@@ -7,7 +9,66 @@
         <div class="row">
             <center>
                 <!--<img src="~/Content/image/welcome.jpg" width="100%" height="auto"/>-->
+                <h1>Resources</h1>
             </center>
+            
+            <table class="table table-striped table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                @if (current_user != null)
+                {
+                    <thead>
+                        <tr><th colspan="3">Your Resources</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Shelf shelf in ViewBag.user_shelves)
+                        {
+                            <tr>
+                                <td><a href="/shelves/details/@shelf.id">@shelf.title</a></td>
+                                <td> - </td>
+                                <td>Shelf</td>
+                            </tr>
+                        }
+                        @foreach (Content content in ViewBag.user_contents)
+                        {
+                            <tr>
+                                <td><a href="/contents/details/@content.id">@content.title</a></td>
+                                <td><a href="@content.url">@content.url</a></td>
+                                <td>@content.type</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                @if (ViewBag.public_resources_count != null && ViewBag.public_resources_count > 0)
+                {
+                    <thead>
+                        <tr><th colspan="3">Public Resources</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Shelf shelf in ViewBag.public_shelves)
+                        {
+                            <tr>
+                                <td><a href="/shelves/details/@shelf.id">@shelf.title</a></td>
+                                <td> - </td>
+                                <td>Shelf</td>
+                            </tr>
+                        }
+                        @foreach (Content content in ViewBag.public_contents)
+                        {
+                            <tr>
+                                <td><a href="/content/details/@content.id">@content.title</a></td>
+                                <td><a href="@content.url">@content.url</a></td>
+                                <td>@content.type</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+            </table>
         </div>
     </div>
 </section>

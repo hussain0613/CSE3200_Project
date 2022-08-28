@@ -43,7 +43,7 @@ namespace CSE3200_Project.Controllers
                 {
                     return Redirect(from);
                 }
-                return Redirect("/profile");
+                return Redirect("/");
             }
             Response.StatusCode = 404;
             ViewBag.Message = "Invalid credentials!";
