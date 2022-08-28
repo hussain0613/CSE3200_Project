@@ -80,6 +80,27 @@
         </div>
     </div>
 
+    <div class="form-group">
+        @Html.Label("tags", "Put into tags", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @{
+                string str = "";
+                str += Model.tags.ElementAt(0).tag1;
+            }
+
+            @for (int i = 1; i < Model.tags.Count(); i++)
+            {
+                str += ",";
+                str += Model.tags.ElementAt(i).tag1;
+            }
+
+            @Html.TextArea("Tags", str, new { htmlAttributes = new { @class = "form-control", @Value = str } })
+
+
+        </div>
+    </div>
+
+
     @if (current_user != null && current_user.role.ToLower().Equals("admin"))
     {
         <div class="form-group">
