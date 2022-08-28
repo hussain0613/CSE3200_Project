@@ -16,7 +16,7 @@ namespace CSE3200_Project.Attributes
         {
             HttpCookie token = filterContext.HttpContext.Request.Cookies.Get("token");
             
-            if(token != null)
+            if(token != null && token["id"] != null)
             {
                 int id = int.Parse(token["id"]);
                 User user = db.Users.Find(id);
