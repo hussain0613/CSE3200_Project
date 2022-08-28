@@ -14,36 +14,73 @@ namespace CSE3200_Project.Controllers
         private DRIEntities db = new DRIEntities();
         public ActionResult Index()
         {
-            int public_resources_count = 0;
             User current_user = (User)HttpContext.Items["current_user"];
-            if(current_user != null)
+            string query = Request.QueryString.Get("query");
+            string filter_tag = Request.QueryString.Get("tag");
+            string filter_type = Request.QueryString.Get("type");
+
+            IQueryable<Shelf> public_shelves, user_shelves = null;
+            IQueryable<Content> public_contents, user_contents = null;
+            
+            if (current_user != null)
             {
-                ViewBag.user_shelves = db.Shelves.Where(shelf => shelf.creator_id == current_user.id).OrderByDescending(shelf => shelf.modification_datetime);
-                ViewBag.user_contents = db.Contents.Where(cont => cont.creator_id == current_user.id && cont.Shelves.Count == 0).OrderByDescending(cont => cont.modification_datetime);
+                user_shelves = db.Shelves.Where(shelf => shelf.creator_id == current_user.id);
+                user_contents = db.Contents.Where(cont => cont.creator_id == current_user.id);
+                
 
-                IOrderedQueryable<Shelf> shelves = db.Shelves.Where(shelf => shelf.privacy.ToLower().Equals("public") && shelf.creator_id != current_user.id).
-                    OrderByDescending(shelf => shelf.modification_datetime);
-                public_resources_count += shelves.Count();
-                ViewBag.public_shelves = shelves;
-
-                IOrderedQueryable<Content> contents = db.Contents.Where(cont => cont.privacy.ToLower().Equals("public") && cont.creator_id != current_user.id && cont.Shelves.Count == 0).
-                    OrderByDescending(cont => cont.modification_datetime);
-                ViewBag.public_contents = contents;
-                public_resources_count += contents.Count();
+                public_shelves = db.Shelves.Where(shelf => shelf.privacy.ToLower().Equals("public") && shelf.creator_id != current_user.id);
+                public_contents = db.Contents.Where(cont => cont.privacy.ToLower().Equals("public") && cont.creator_id != current_user.id);
             }
             else
             {
-                IOrderedQueryable<Shelf> shelves = db.Shelves.Where(shelf => shelf.privacy.ToLower().Equals("public")).
-                    OrderByDescending(shelf => shelf.modification_datetime);
-                public_resources_count += shelves.Count();
-                ViewBag.public_shelves = shelves;
-
-                IOrderedQueryable<Content> contents = db.Contents.Where(cont => cont.privacy.ToLower().Equals("public") && cont.Shelves.Count == 0).
-                    OrderByDescending(cont => cont.modification_datetime);
-                ViewBag.public_contents = contents;
-                public_resources_count += contents.Count();
+                public_shelves = db.Shelves.Where(shelf => shelf.privacy.ToLower().Equals("public"));
+                public_contents = db.Contents.Where(cont => cont.privacy.ToLower().Equals("public"));
             }
-            ViewBag.public_resources_count = public_resources_count;
+
+            if (string.IsNullOrWhiteSpace(query) && string.IsNullOrWhiteSpace(filter_tag) && string.IsNullOrWhiteSpace(filter_type))
+            {
+                //public_contents = public_contents.Where(cont => cont.Shelves.Count() == 0);
+                //if(current_user != null)
+                //{
+                //    user_contents = user_contents.Where(cont => cont.Shelves.Count() == 0);
+                //}
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(query))
+                {
+                    query = query.Trim().ToLower();
+                    ViewBag.query = query;
+
+                    public_shelves = public_shelves.Where(shelf => shelf.title.ToLower().Contains(query));
+                    public_contents = public_contents.Where(
+                        cont => cont.title.ToLower().Contains(query) || 
+                        cont.url.ToLower().Contains(query) ||
+                        cont.alternative_url.ToLower().Contains(query)
+                        );
+
+                    if(current_user != null)
+                    {
+                        user_shelves = user_shelves.Where(shelf => shelf.title.ToLower().Contains(query));
+                        user_contents = user_contents.Where(
+                            cont => cont.title.ToLower().Contains(query) ||
+                            cont.url.ToLower().Contains(query) ||
+                            cont.alternative_url.ToLower().Contains(query)
+                            );
+                    }
+                }
+            }
+            
+            
+            ViewBag.public_shelves = public_shelves.OrderByDescending(shelf => shelf.modification_datetime);
+            ViewBag.public_contents = public_contents.OrderByDescending(cont => cont.modification_datetime);
+            ViewBag.public_resources_count = public_shelves.Count() + public_contents.Count();
+
+            if(current_user != null)
+            {
+                ViewBag.user_shelves = user_shelves.OrderByDescending(shelf => shelf.modification_datetime);
+                ViewBag.user_contents = user_contents.OrderByDescending(cont => cont.modification_datetime);
+            }
             return View();
         }
     }
