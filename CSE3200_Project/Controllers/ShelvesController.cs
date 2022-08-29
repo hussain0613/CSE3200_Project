@@ -103,12 +103,12 @@ namespace CSE3200_Project.Controllers
                     string[] tags_array = tags.Split(',');
                     foreach (string tag_name in tags_array)
                     {
-                        tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(tag_name.Trim().ToLower())).FirstOrDefault();
-                        string tg = tag.tag1;
-                        if (tg == null)
+                        string trimmed_lowerd_tag = tag_name.Trim().ToLower();
+                        tag tag = db.tags.Where(t => t.tag1.ToLower().Equals(trimmed_lowerd_tag)).FirstOrDefault();
+                        if (tag == null)
                         {
                             tag = new tag();
-                            tag.tag1 = tag_name.Trim().ToLower();
+                            tag.tag1 = trimmed_lowerd_tag;
                             db.tags.Add(tag);
                         }
                         tags_list.Add(tag);
@@ -143,6 +143,15 @@ namespace CSE3200_Project.Controllers
                 return HttpNotFound();
             }
             User current_user = ((User)HttpContext.Items["current_user"]);
+            if (shelf.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
             ViewBag.unassociated_contents = db.Contents.Include(content => content.User).Where(content => content.creator_id == current_user.id);
             return View(shelf);
         }
@@ -160,6 +169,16 @@ namespace CSE3200_Project.Controllers
                 Shelf shelf_db = db.Shelves.Find(shelf.id);
                 if (shelf_db != null)
                 {
+                    if (shelf_db.creator_id != current_user.id)
+                    {
+                        HttpCookie responseCookie = new HttpCookie("Message");
+                        responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                        Response.Cookies.Add(responseCookie);
+                        Response.StatusCode = 403;
+                        if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                        else return Redirect("/");
+                    }
+
                     string[] contents_ids = Request.Form.GetValues("contents");
                     if (contents_ids != null && contents_ids.Length > 0)
                     {
@@ -182,7 +201,37 @@ namespace CSE3200_Project.Controllers
                         }
                     }
 
-                    
+                    string tags = Request.Form.Get("tags");
+                    if (tags != null && tags.Length > 0)
+                    {
+                        string[] tags_array = tags.Split(',');
+                        foreach (string tag_name in tags_array)
+                        {
+                            string trimmed_lowerd_tag = tag_name.Trim().ToLower();
+                            tag tg = db.tags.Where(t => t.tag1.ToLower().Equals(trimmed_lowerd_tag)).FirstOrDefault();
+                            if (tg == null)
+                            {
+                                tg = new tag();
+                                tg.tag1 = trimmed_lowerd_tag;
+                                db.tags.Add(tg);
+                            }
+                            shelf.tags.Add(tg);
+                            if (!shelf_db.tags.Contains(tg))
+                            {
+                                shelf_db.tags.Add(tg);
+                            }
+                        }
+                    }
+
+                    foreach (tag tg in shelf_db.tags.ToList())
+                    {
+                        if (!shelf.tags.Contains(tg))
+                        {
+                            shelf_db.tags.Remove(tg);
+                        }
+                    }
+
+
                     shelf_db.modifier_id = ((User)HttpContext.Items["current_user"]).id;
                     shelf_db.title = shelf.title;
                     shelf_db.details = shelf.details;
@@ -213,6 +262,16 @@ namespace CSE3200_Project.Controllers
             {
                 return HttpNotFound();
             }
+            User current_user = ((User)HttpContext.Items["current_user"]);
+            if (shelf.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
             return View(shelf);
         }
 
@@ -222,6 +281,18 @@ namespace CSE3200_Project.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Shelf shelf = db.Shelves.Find(id);
+            
+            User current_user = ((User)HttpContext.Items["current_user"]);
+            if (shelf.creator_id != current_user.id)
+            {
+                HttpCookie responseCookie = new HttpCookie("Message");
+                responseCookie["message"] = "Not Authorized to view the target page! Please try again with an authorized account!";
+                Response.Cookies.Add(responseCookie);
+                Response.StatusCode = 403;
+                if (Request.UrlReferrer != null) return Redirect(Request.UrlReferrer.AbsoluteUri);
+                else return Redirect("/");
+            }
+
             db.Shelves.Remove(shelf);
             db.SaveChanges();
             return RedirectToAction("Index");

@@ -34,7 +34,11 @@ namespace CSE3200_Project.Controllers
                 token["username"] = user.username;
                 token["id"] = user.id.ToString();
                 token["user-agent"] = Request.UserAgent;
-                token.Expires.AddHours(1);
+                if (creds.RememberMe)
+                {
+                    token.Expires = DateTime.Now;
+                    token.Expires = token.Expires.AddMonths(3);
+                }
                 // DateTime d = DateTime.Now + new TimeSpan(0,1,0);
 
                 string from = Request.QueryString["next"];
@@ -43,7 +47,7 @@ namespace CSE3200_Project.Controllers
                 {
                     return Redirect(from);
                 }
-                return Redirect("/profile");
+                return Redirect("/");
             }
             Response.StatusCode = 404;
             ViewBag.Message = "Invalid credentials!";

@@ -1,16 +1,132 @@
-﻿@{
+﻿@using CSE3200_Project.Models
+@{
     ViewBag.Title = "Home Page";
+    User current_user = (User)HttpContext.Current.Items["current_user"];
+    int n_col = 3;
 }
-
-
-
 <section>
-            <div class="container-fluid">
-                <div class="row">
-                    <center>
-                        <!--<img src="~/Content/image/welcome.jpg" width="100%" height="auto"/>-->
-                        
-                    </center>
-                </div>
-            </div>
- </section>
+    <div class="container-fluid">
+        <div class="row">
+            <center>
+                <!--<img src="~/Content/image/welcome.jpg" width="100%" height="auto"/>-->
+                <h1>Resources</h1>
+                <form>
+                    <div class="form-group">
+                        <input type="search" placeholder="Search" name="query" class="form-control" />
+                    </div>
+                    <label>Filters:</label>
+                    <div class="row form-group">
+                        <div class="col-md-4">
+                            <input type="text" placeholder="Tag" name="tag" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <select name="type" class="form-control">
+                                <option value="any">Any</option>
+                                <option value="shelf">Shelf</option>
+                                <option value="content">Content</option>
+
+                                <optgroup label="Content Types">
+                                    <option value="text">Text</option>
+                                    <option value="video">Video</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="audio">Audio</option>
+                                    <option value="others">Others</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <input type="submit" value="Searhc & Filter" class="col-md-4 btn" />
+                    </div>
+                </form>
+
+                @if (ViewBag.query != null)
+                {
+                    <h4>Search Result for: '@ViewBag.query'</h4>
+                }
+                @if(ViewBag.tag != null || ViewBag.type != null)
+                {
+                    <h6>Applied Filter: Tag = @ViewBag.tag and type = @ViewBag.type</h6>
+                }
+
+            </center>
+            
+            <table class="table table-striped table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>URL</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                @if (current_user != null)
+                {
+                    if (ViewBag.user_shelves != null)
+                    {
+                        <thead>
+                            <tr><th colspan="@n_col">Your Shelves</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Shelf shelf in ViewBag.user_shelves)
+                            {
+                                <tr>
+                                    <td><a href="/shelves/details/@shelf.id">@shelf.title</a></td>
+                                    <td> - </td>
+                                    <td>Shelf</td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+
+                    if (ViewBag.user_contents != null)
+                    {
+                        <thead>
+                            <tr><th colspan="@n_col">Your Contents</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Content content in ViewBag.user_contents)
+                            {
+                                <tr>
+                                    <td><a href="/contents/details/@content.id">@content.title</a></td>
+                                    <td><a href="@content.url">@content.url</a></td>
+                                    <td>@content.type</td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                }
+                @if (ViewBag.public_shelves != null)
+                {
+                    <thead>
+                        <tr><th colspan="@n_col">Public Shelves</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Shelf shelf in ViewBag.public_shelves)
+                        {
+                            <tr>
+                                <td><a href="/shelves/details/@shelf.id">@shelf.title</a></td>
+                                <td> - </td>
+                                <td>Shelf</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                @if (ViewBag.public_contents != null)
+                {
+                    <thead>
+                        <tr><th colspan="@n_col">Public Contents</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Content content in ViewBag.public_contents)
+                        {
+                            <tr>
+                                <td><a href="/contents/details/@content.id">@content.title</a></td>
+                                <td><a href="@content.url">@content.url</a></td>
+                                <td>@content.type</td>
+                            </tr>
+                        }
+                    </tbody>
+                }
+            </table>
+        </div>
+    </div>
+</section>
+
